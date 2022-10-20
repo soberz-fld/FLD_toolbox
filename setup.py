@@ -8,7 +8,9 @@ setup(
     author='Lars Wilting',
     license='GNU GENERAL PUBLIC LICENSE',
     package_dir={'fld_toolbox': 'src'},
-    packages=['fld_toolbox'],
-    install_requires=[],
+    packages=['fld_toolbox', 'fld_toolbox.calcs', 'fld_toolbox.homeassistant'],
+    install_requires=[
+        'Levenshtein'
+    ],
     classifiers=[],
 )

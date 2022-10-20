@@ -13,7 +13,7 @@ if os.name == 'nt':  # Windows
 elif os.name == 'posix':  # Linux
     requirements_txt_path = path + '/' + 'requirements.txt'
 else:
-    requirements_txt_path = 'requirements.txt'
+    requirements_txt_path = '../requirements.txt'
 
 with open(requirements_txt_path, mode='r') as req_file:
     dependencies = req_file.read().splitlines()
