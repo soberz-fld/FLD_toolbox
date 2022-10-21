@@ -18,6 +18,14 @@ __log_temp_counter = 0  # If a specific number of logs are written, size of logf
 __project_path = ''  # path of project if python file is part of a project that has a main.py in root folder
 
 
+def set_debug_print(value: bool):
+    global _debug_print
+    _debug_print = value
+
+def set_debug_write(value: bool):
+    global _debug_write
+    _debug_write = value
+
 def __initialize_logfile_if_necessary_() -> None:
     global __logfile
     __logfile = open(__logfile_path, mode='r+', encoding='utf-8')
@@ -132,7 +140,7 @@ __init__()
 def log(**type_and_string_kwargs) -> None:
     """
     This function logs information in logfile.
-    I suggest importing it like 'from logging import log' so a sample input is
+    I suggest importing it like 'from fld_toolbox.fldlogging import log' so a sample input is
        log(error='TextToLog')
     So you choose the type of log entry as name of the kwarg. You can choose one of the following: text, debug, action, error, critical
      - text is just text.
