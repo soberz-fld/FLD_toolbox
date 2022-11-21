@@ -8,7 +8,6 @@ _debug_print = True
 # _debug_write lets you write logs of type debug to file.
 _debug_write = True
 
-__log_types = ['text', 'debug', 'action', 'error', 'critical']
 __logfile_name = 'logs'  # Filename without extension
 __logfile_number = 0  # Counter of logfile when splitting after maximum filesize is reached
 __logfile_path = ''  # path of logfile is dynamically created
@@ -22,9 +21,11 @@ def set_debug_print(value: bool):
     global _debug_print
     _debug_print = value
 
+
 def set_debug_write(value: bool):
     global _debug_write
     _debug_write = value
+
 
 def __initialize_logfile_if_necessary_() -> None:
     global __logfile
@@ -128,7 +129,9 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
     # Setting project name (optional)
     if project_name != '':
         global __logfile_name
-        __logfile_name = ''.join([i if ord(i) < 128 else '#' for i in project_name]).replace('/', '#').replace('\\', '#').replace('.', '#').replace(' ', '#') + '_logs'
+        __logfile_name = ''.join([i if ord(i) < 128 else '#' for i in project_name]).replace('/', '#').replace('\\',
+                                                                                                               '#').replace(
+            '.', '#').replace(' ', '#') + '_logs'
 
     __update_logfile_path_and_check_maximum_size()
     __initialize_logfile_if_necessary_()  # If only empty logfile exists, it needs the head
@@ -137,7 +140,7 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
 __init__()
 
 
-def log(**type_and_string_kwargs) -> None:
+def log(text: str = '', debug: str = '', action: str = '', error: str = '', critical: str = '') -> None:
     """
     This function logs information in logfile.
     I suggest importing it like 'from fld_toolbox.fldlogging import log' so a sample input is
@@ -148,11 +151,20 @@ def log(**type_and_string_kwargs) -> None:
      - action is confirmation, that an action is done. It's marked as confirmation.
      - error is a normal error message
      - critical is a critical error message and is marked as such
-    :param type_and_string_kwargs: Text to log. kwarg name is the type of log entry. You can see all possible types in the description further up.
+    :param Text to log. Each parameter is the type of log entry. You can see all possible types in the description further up.
     :return: Does not return anything usefull
     """
     curframe = inspect.currentframe()
     global __logfile
+
+    # Each parameter to dict
+    __log_types = {
+        'text': text,
+        'debug': debug,
+        'action': action,
+        'error': error,
+        'critical': critical
+    }
 
     # logfile should not exceed limit of 1 MB but checking at every logging may slow programm down so it does only check every 50 times
     global __log_temp_counter
@@ -163,28 +175,28 @@ def log(**type_and_string_kwargs) -> None:
     try:
         __logfile = open(__logfile_path, mode='a', encoding='utf-8')
         for log_type in __log_types:
-            try:
-                text_to_logfile = '\n'
-                text_to_logfile += str(__datetime.now())[0:26]
-                text_to_logfile += __log_values_delimiter
-                text_to_logfile += log_type.ljust(10, ' ')[0:10]
-                text_to_logfile += __log_values_delimiter
-                text_to_logfile += inspect.getouterframes(curframe, 2)[1][1].ljust(100, ' ')[0:100]
-                text_to_logfile += __log_values_delimiter
-                text_to_logfile += 'line ' + str(inspect.getouterframes(curframe, 2)[1][2]).ljust(6, ' ')[0:6]
-                text_to_logfile += __log_values_delimiter
-                text_to_logfile += inspect.getouterframes(curframe, 2)[1][3].ljust(40, ' ')[0:40]
-                text_to_logfile += __log_values_delimiter
-                text_to_logfile += str(type_and_string_kwargs[log_type]).replace('\n', '\\n').replace('\t',
-                                                                                                      '\\t').replace(
-                    '|', '/')
-                if log_type != 'debug' or _debug_write:
-                    # Does not write debugs to database if _debug_write is false
-                    __logfile.write(text_to_logfile)
-                if _debug_print:
-                    print("\033[38;2;{};{};{}m{} \033[38;2;255;255;255m".format(255, 128, 0, text_to_logfile[30:]))
-            except KeyError:
-                pass
+            if __log_types[log_type] != '':
+                try:
+                    text_to_logfile = '\n'
+                    text_to_logfile += str(__datetime.now())[0:26]
+                    text_to_logfile += __log_values_delimiter
+                    text_to_logfile += log_type.ljust(10, ' ')[0:10]
+                    text_to_logfile += __log_values_delimiter
+                    text_to_logfile += inspect.getouterframes(curframe, 2)[1][1].ljust(100, ' ')[0:100]
+                    text_to_logfile += __log_values_delimiter
+                    text_to_logfile += 'line ' + str(inspect.getouterframes(curframe, 2)[1][2]).ljust(6, ' ')[0:6]
+                    text_to_logfile += __log_values_delimiter
+                    text_to_logfile += inspect.getouterframes(curframe, 2)[1][3].ljust(40, ' ')[0:40]
+                    text_to_logfile += __log_values_delimiter
+                    text_to_logfile += str(__log_types[log_type]).replace('\n', '\\n').replace('\t', '\\t').replace('|',
+                                                                                                                    '/')
+                    if log_type != 'debug' or _debug_write:
+                        # Does not write debugs to database if _debug_write is false
+                        __logfile.write(text_to_logfile)
+                    if _debug_print:
+                        print("\033[38;2;{};{};{}m{} \033[38;2;255;255;255m".format(255, 128, 0, text_to_logfile[30:]))
+                except KeyError:
+                    pass
         __logfile.close()
     except FileNotFoundError:
         exit('FileNotFoundError in log')

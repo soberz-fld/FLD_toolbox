@@ -2,7 +2,7 @@ import sys
 import mariadb
 
 
-class mariadb_connector():
+class MariaDBConnector:
     _conn = None
     _cursor = None
 

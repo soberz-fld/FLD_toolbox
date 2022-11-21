@@ -1,9 +1,28 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.1] - 2022.11.21
+### Added
+* Homeassistant_DB min/max and avg
+### Changed
+* Log changed from kwarg based to positional parameter based
+### Fixed
+* Home_assistant_connector time parameters
+## [0.0.0 b3] - 2022.11.01
+### Added
+* List calculations
+## [0.0.0 b2] - 2022.10.21
+### Added
+* Networking
+* Connectors
+    * Homeassistant
+    * MariaDB
+    * ModbusTCP
+### Changed
+* Restructured repository
 ## [0.0.0 b1] - 2022.07.28
 ### Added
 * logging module
-## [0.0.0 b0] - 2022.07.27
+## [0.0.0] - 2022.07.27
 ### Comments
 * Started project. Let's go.
 <!--
@@ -14,6 +33,6 @@ In this document, most significant changes are noted.
 * abc
 ### Fixed
 * abc
-* ### Comments
+### Comments
 * abc
 -->

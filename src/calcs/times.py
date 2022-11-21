@@ -1,13 +1,13 @@
 import datetime
 import time
 
-def convert_utc_to_cet(self, utc_time: datetime.datetime):
+def convert_utc_to_cet(utc_time: datetime.datetime) -> datetime.datetime:
     epoch = time.mktime(utc_time.timetuple())
     offset = datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)
     return utc_time + offset
 
 
-def get_next_day_as_ints(self, p_year: int, p_month: int, p_day: int):
+def get_next_day_as_ints(self, p_year: int, p_month: int, p_day: int) -> tuple[int, int, int]:
     if p_year < 1900 or p_month < 1 or p_month > 12 or p_day < 1 or p_day > 31:
         print('Error: get_next_day_as_ints - invalid date')
     else:
@@ -49,3 +49,15 @@ def calculate_if_year_is_leapyear(self, p_year: int) -> bool:
     if p_year % 400 == 0:
         schalt = True
     return schalt
+
+def check_datetime_intervall(from_datetime: datetime.datetime, to_datetime: datetime.datetime) -> tuple[datetime.datetime, datetime.datetime]:
+    """
+    If identical: From 00:00:00 to 23:59:59
+    If to_datetime is before from_datetime: Fixes order
+    """
+    if (to_datetime - from_datetime).total_seconds() < 0:  # If from date is after to date
+        return to_datetime, from_datetime
+    if from_datetime == to_datetime:
+        from_datetime = datetime.datetime(from_datetime.year, from_datetime.month, from_datetime.day, 0, 0, 000000)
+        to_datetime = datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999)
+    return from_datetime, to_datetime
