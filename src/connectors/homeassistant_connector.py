@@ -2,9 +2,9 @@ import requests
 import time
 import datetime
 
-from src.connectors.mariadb_connector import MariaDBConnector
-from src.fldlogging import log
-from src.calcs.times import check_datetime_intervall
+from .mariadb_connector import MariaDBConnector
+from ..fldlogging import log
+from ..calcs.times import check_datetime_intervall
 
 
 class HomeAssistantConnector:
