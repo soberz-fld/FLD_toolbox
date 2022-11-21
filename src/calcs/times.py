@@ -6,6 +6,11 @@ def convert_utc_to_cet(utc_time: datetime.datetime) -> datetime.datetime:
     offset = datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)
     return utc_time + offset
 
+def convert_cet_to_utc(cet_time: datetime.datetime) -> datetime.datetime:
+    epoch = time.mktime(cet_time.timetuple())
+    offset = datetime.datetime.utcfromtimestamp(epoch) - datetime.datetime.fromtimestamp(epoch)
+    return cet_time + offset
+
 
 def get_next_day_as_ints(self, p_year: int, p_month: int, p_day: int) -> tuple[int, int, int]:
     if p_year < 1900 or p_month < 1 or p_month > 12 or p_day < 1 or p_day > 31:
