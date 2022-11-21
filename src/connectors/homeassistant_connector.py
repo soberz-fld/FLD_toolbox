@@ -83,15 +83,13 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         if not result:
             log(error='DB response is invalid.')
             return None
-
-        value_type = float if '.' in result[0][0] else int
-        sum = 0
+        states_sum = 0
         anz = 0
         for state in result:
             if state[0] != 'unavailable' and state[0] != 'unknown':
-                sum += value_type(state[0])
+                states_sum += state[0]
                 anz += 1
         if anz != 0:
-            return sum / anz
+            return states_sum / anz
         else:
             return None
