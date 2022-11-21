@@ -35,15 +35,15 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         if minimum_true_maximum_false:
             sql_min_max_order = 'ASC'
             if threshold_including is not None:
-                sql_threshold = 'AND state_float >= ' + str(threshold_including)
+                sql_threshold = 'AND CAST(state AS float) >= ' + str(threshold_including)
             if threshold_excluding is not None:
-                sql_threshold = 'AND state_float > ' + str(threshold_excluding)
+                sql_threshold = 'AND CAST(state AS float) > ' + str(threshold_excluding)
         else:
             sql_min_max_order = 'DESC'
             if threshold_including is not None:
-                sql_threshold = 'AND state_float <= ' + str(threshold_including)
+                sql_threshold = 'AND CAST(state AS float) <= ' + str(threshold_including)
             if threshold_excluding is not None:
-                sql_threshold = 'AND state_float < ' + str(threshold_excluding)
+                sql_threshold = 'AND CAST(state AS float) < ' + str(threshold_excluding)
 
         result = self._db.execute_statement(
             f"SELECT CAST(state AS float) AS state_float, last_updated FROM states WHERE entity_id=? AND last_updated > ? AND last_updated < ? {sql_threshold} ORDER BY state_float {sql_min_max_order} LIMIT 1;",
@@ -68,14 +68,14 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         if threshold_including is not None or threshold_excluding is not None:
             if minimum_true_maximum_false_threshold:
                 if threshold_including is not None:
-                    sql_threshold = 'AND state_float >= ' + str(threshold_including)
+                    sql_threshold = 'AND CAST(state AS float) >= ' + str(threshold_including)
                 if threshold_excluding is not None:
-                    sql_threshold = 'AND state_float > ' + str(threshold_excluding)
+                    sql_threshold = 'AND CAST(state AS float) > ' + str(threshold_excluding)
             else:
                 if threshold_including is not None:
-                    sql_threshold = 'AND state_float <= ' + str(threshold_including)
+                    sql_threshold = 'AND CAST(state AS float) <= ' + str(threshold_including)
                 if threshold_excluding is not None:
-                    sql_threshold = 'AND state_float < ' + str(threshold_excluding)
+                    sql_threshold = 'AND CAST(state AS float) < ' + str(threshold_excluding)
 
         result = self._db.execute_statement(
             f"SELECT CAST(state AS float) AS state_float FROM states WHERE entity_id=? AND last_updated > ? AND last_updated < ? {sql_threshold};",
