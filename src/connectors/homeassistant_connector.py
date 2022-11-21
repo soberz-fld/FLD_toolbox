@@ -23,7 +23,7 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
     def get_min_max_in_interval(self, entity_id: str, from_timestamp: datetime.datetime = datetime.datetime.now(),
                                 to_timestamp: datetime.datetime = datetime.datetime.now(),
                                 threshold_including: (int, float) = None, threshold_excluding: (int, float) = None,
-                                minimum_true_maximum_false: bool = True) -> (tuple[int, datetime.datetime], tuple[float, datetime.datetime], None):
+                                minimum_true_maximum_false: bool = True) -> (tuple[float, datetime.datetime], None):
         """
         Standard: From today 00:00:00 to 23:59:59
         """
@@ -35,19 +35,20 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         if minimum_true_maximum_false:
             sql_min_max_order = 'ASC'
             if threshold_including is not None:
-                sql_threshold = 'AND state >= ' + str(threshold_including)
+                sql_threshold = 'AND state_float >= ' + str(threshold_including)
             if threshold_excluding is not None:
-                sql_threshold = 'AND state > ' + str(threshold_excluding)
+                sql_threshold = 'AND state_float > ' + str(threshold_excluding)
         else:
             sql_min_max_order = 'DESC'
             if threshold_including is not None:
-                sql_threshold = 'AND state <= ' + str(threshold_including)
+                sql_threshold = 'AND state_float <= ' + str(threshold_including)
             if threshold_excluding is not None:
-                sql_threshold = 'AND state < ' + str(threshold_excluding)
+                sql_threshold = 'AND state_float < ' + str(threshold_excluding)
 
         result = self._db.execute_statement(
-            f"SELECT state, last_updated FROM states WHERE entity_id=? AND state > 0 AND last_updated > ? AND last_updated < ? {sql_threshold} ORDER BY state {sql_min_max_order} LIMIT 1;",
+            f"SELECT CAST(state AS float) AS state_float, last_updated FROM states WHERE entity_id=? AND last_updated > ? AND last_updated < ? {sql_threshold} ORDER BY state_float {sql_min_max_order} LIMIT 1;",
             (entity_id, from_timestamp, to_timestamp))
+        print(result)
         if not result:
             log(error='DB response is invalid.')
             return None
@@ -67,17 +68,17 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         if threshold_including is not None or threshold_excluding is not None:
             if minimum_true_maximum_false_threshold:
                 if threshold_including is not None:
-                    sql_threshold = 'AND state >= ' + str(threshold_including)
+                    sql_threshold = 'AND state_float >= ' + str(threshold_including)
                 if threshold_excluding is not None:
-                    sql_threshold = 'AND state > ' + str(threshold_excluding)
+                    sql_threshold = 'AND state_float > ' + str(threshold_excluding)
             else:
                 if threshold_including is not None:
-                    sql_threshold = 'AND state <= ' + str(threshold_including)
+                    sql_threshold = 'AND state_float <= ' + str(threshold_including)
                 if threshold_excluding is not None:
-                    sql_threshold = 'AND state < ' + str(threshold_excluding)
+                    sql_threshold = 'AND state_float < ' + str(threshold_excluding)
 
         result = self._db.execute_statement(
-            f"SELECT state FROM states WHERE entity_id=? AND last_updated > ? AND last_updated < ? {sql_threshold};",
+            f"SELECT CAST(state AS float) AS state_float FROM states WHERE entity_id=? AND last_updated > ? AND last_updated < ? {sql_threshold};",
             (entity_id, from_timestamp, to_timestamp))
         if not result:
             log(error='DB response is invalid.')
