@@ -61,3 +61,6 @@ def check_datetime_intervall(from_datetime: datetime.datetime, to_datetime: date
         from_datetime = datetime.datetime(from_datetime.year, from_datetime.month, from_datetime.day, 0, 0, 000000)
         to_datetime = datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999)
     return from_datetime, to_datetime
+
+def get_datetime_from_date(date: datetime.date) -> datetime.datetime:
+    return datetime.datetime(date.year, date.month, date.day, 0, 0, 0, 000000)
