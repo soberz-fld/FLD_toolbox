@@ -27,7 +27,7 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         """
         Standard: From today 00:00:00 to 23:59:59
         """
-        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp)
+        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp, True)
 
         # Conditions
         sql_threshold = ''
@@ -60,7 +60,7 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         """
         Standard: From today 00:00:00 to 23:59:59
         """
-        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp)
+        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp, True)
 
         # Conditions
         sql_threshold = ''
@@ -100,7 +100,7 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         """
                 Standard: From today 00:00:00 to 23:59:59
                 """
-        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp)
+        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp, True)
 
         # Conditions
         sql_threshold = ''

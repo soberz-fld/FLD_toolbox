@@ -55,16 +55,24 @@ def calculate_if_year_is_leapyear(self, p_year: int) -> bool:
         schalt = True
     return schalt
 
-def check_datetime_intervall(from_datetime: datetime.datetime, to_datetime: datetime.datetime) -> tuple[datetime.datetime, datetime.datetime]:
+def check_datetime_intervall(from_datetime: datetime.datetime, to_datetime: datetime.datetime, use_utc: bool = False) -> tuple[datetime.datetime, datetime.datetime]:
     """
-    If identical: From 00:00:00 to 23:59:59
+    If identical: From 00:00:00 to 23:59:59 (matching cet even if time is given in utc)
     If to_datetime is before from_datetime: Fixes order
     """
     if (to_datetime - from_datetime).total_seconds() < 0:  # If from date is after to date
         return to_datetime, from_datetime
     if from_datetime == to_datetime:
-        from_datetime = datetime.datetime(from_datetime.year, from_datetime.month, from_datetime.day, 0, 0, 000000)
-        to_datetime = datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999)
+        if use_utc:
+            from_cet = convert_utc_to_cet(from_datetime)
+            to_cet = convert_utc_to_cet(to_datetime)
+            from_cet_datetime = datetime.datetime(from_cet.year, from_cet.month, from_cet.day, 0, 0, 000000)
+            to_cet_datetime = datetime.datetime(to_cet.year, to_cet.month, to_cet.day, 23, 59, 59, 999999)
+            from_datetime = convert_cet_to_utc(from_cet_datetime)
+            to_datetime = convert_cet_to_utc(to_cet_datetime)
+        else:
+            from_datetime = datetime.datetime(from_datetime.year, from_datetime.month, from_datetime.day, 0, 0, 000000)
+            to_datetime = datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999)
     return from_datetime, to_datetime
 
 def get_datetime_from_date(date: datetime.date) -> datetime.datetime:
