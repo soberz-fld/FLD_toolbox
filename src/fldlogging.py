@@ -15,6 +15,7 @@ __log_values_delimiter = ' | '  # If changed, you need to change regex pattern i
 __logfile = None  # Here the logfilehandler is stored later
 __log_temp_counter = 0  # If a specific number of logs are written, size of logfile has to be checked. I don't want to check it every time. It may slow down.
 __project_path = ''  # path of project if python file is part of a project that has a main.py in root folder
+__log_path_of_module_length = 120
 
 
 def set_debug_print(value: bool):
@@ -38,7 +39,7 @@ def __initialize_logfile_if_necessary_() -> None:
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
         text_to_logfile += ''.ljust(10, '-')[0:10]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
-        text_to_logfile += ''.ljust(100, '-')[0:100]
+        text_to_logfile += ''.ljust(__log_path_of_module_length, '-')[0:__log_path_of_module_length]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
         text_to_logfile += ''.ljust(11, '-')[0:11]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
@@ -51,7 +52,7 @@ def __initialize_logfile_if_necessary_() -> None:
         text_to_logfile += __log_values_delimiter
         text_to_logfile += 'type'.ljust(10, ' ')[0:10]
         text_to_logfile += __log_values_delimiter
-        text_to_logfile += 'From Module / Python File'.ljust(100, ' ')[0:100]
+        text_to_logfile += 'From Module / Python File'.ljust(__log_path_of_module_length, ' ')[0:__log_path_of_module_length]
         text_to_logfile += __log_values_delimiter
         text_to_logfile += 'From line'.ljust(11, ' ')[0:11]
         text_to_logfile += __log_values_delimiter
@@ -63,7 +64,7 @@ def __initialize_logfile_if_necessary_() -> None:
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
         text_to_logfile += ''.ljust(10, '-')[0:10]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
-        text_to_logfile += ''.ljust(100, '-')[0:100]
+        text_to_logfile += ''.ljust(__log_path_of_module_length, '-')[0:__log_path_of_module_length]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
         text_to_logfile += ''.ljust(11, '-')[0:11]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
@@ -183,7 +184,7 @@ def log(text: str = '', debug: str = '', action: str = '', alert = '', error: st
                     text_to_logfile += __log_values_delimiter
                     text_to_logfile += log_type.ljust(10, ' ')[0:10]
                     text_to_logfile += __log_values_delimiter
-                    text_to_logfile += inspect.getouterframes(curframe, 2)[1][1].ljust(100, ' ')[0:100]
+                    text_to_logfile += inspect.getouterframes(curframe, 2)[1][1].ljust(__log_path_of_module_length, ' ')[0:__log_path_of_module_length]
                     text_to_logfile += __log_values_delimiter
                     text_to_logfile += 'line ' + str(inspect.getouterframes(curframe, 2)[1][2]).ljust(6, ' ')[0:6]
                     text_to_logfile += __log_values_delimiter
