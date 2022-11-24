@@ -3,6 +3,7 @@ In this document, most significant changes are noted.
 ## [0.0.1 b1] - 2022.11.24
 ### Added
 * ModbusTCP functionalities
+* ModbusTCP-HomeAssistant-Gateway
 * fldsvsmanager as a manager for scheduled services
 * Logging: Log type 'alert'
 ### Fixed
