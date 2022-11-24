@@ -12,7 +12,7 @@ def convert_cet_to_utc(cet_time: datetime.datetime) -> datetime.datetime:
     return cet_time + offset
 
 
-def get_next_day_as_ints(self, p_year: int, p_month: int, p_day: int) -> tuple[int, int, int]:
+def get_next_day_as_ints(p_year: int, p_month: int, p_day: int) -> tuple[int, int, int]:
     if p_year < 1900 or p_month < 1 or p_month > 12 or p_day < 1 or p_day > 31:
         print('Error: get_next_day_as_ints - invalid date')
     else:
@@ -45,7 +45,7 @@ def get_next_day_as_ints(self, p_year: int, p_month: int, p_day: int) -> tuple[i
             print('Error: get_next_day_as_ints - out of handling conditions')
 
 
-def calculate_if_year_is_leapyear(self, p_year: int) -> bool:
+def calculate_if_year_is_leapyear(p_year: int) -> bool:
     schalt = False
     if p_year % 4 == 0:
         schalt = True
