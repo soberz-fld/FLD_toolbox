@@ -3,6 +3,9 @@ In this document, most significant changes are noted.
 ## [0.0.1 b1] - 2022.11.24
 ### Added
 * Logging: Log type 'alert'
+* ModbusTCP functionalities
+### Fixed
+* MariaDB connector error to log
 ## [0.0.1] - 2022.11.21
 ### Added
 * Homeassistant_DB min/max and avg

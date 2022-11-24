@@ -1,6 +1,7 @@
 import sys
 import mariadb
 
+from ..fldlogging import log
 
 class MariaDBConnector:
     _conn = None
@@ -17,7 +18,7 @@ class MariaDBConnector:
             )
             self._cursor = self._conn.cursor()
         except mariadb.Error as e:
-            print(e)
+            log(critical=str())
             sys.exit()
 
     def execute_statement(self, statement: str, parameter: tuple = None) -> list:
