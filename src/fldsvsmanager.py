@@ -19,7 +19,10 @@ def module_initializer(list_of_instances: list) -> None:
         - (instance, day_kind, at_hour, at_minute, at_second)
     :return: None
     """
-    for instance_tuple in list_of_instances:
+    if not list_of_instances:
+		log(critical='Nothing to schedule. Exiting...')
+		exit(404)
+	for instance_tuple in list_of_instances:
         try:
             job = None
             if len(instance_tuple) == 2:  # Job every x seconds
