@@ -1,11 +1,11 @@
-import homeassistant_connector
-import modbustcp_connector
+from ..connectors.homeassistant_connector import HomeAssistantConnector
+from ..connectors.modbustcp_connector import ModbusTCPConnector
 
 from ..fldlogging import log
 
 
 class ModbusTcpHomeAssistantGateway:
-    def __int__(self, homeassistant_connector: homeassistant_connector, modbustcp_connector: modbustcp_connector):
+    def __int__(self, homeassistant_connector: HomeAssistantConnector, modbustcp_connector: ModbusTCPConnector):
         self._homeassistant_connector = homeassistant_connector
         self._modbustcp_connector = modbustcp_connector
 
