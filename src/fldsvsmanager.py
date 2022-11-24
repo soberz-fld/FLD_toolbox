@@ -2,7 +2,7 @@ import schedule
 import threading
 import types
 
-from fldlogging import log
+from .fldlogging import log
 
 
 def _run_in_new_thread(job_function) -> None:

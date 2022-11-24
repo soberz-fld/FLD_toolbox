@@ -2,7 +2,7 @@ import pip
 import inspect
 import os
 
-from fldlogging import log
+from .fldlogging import log
 
 filename = inspect.getframeinfo(inspect.currentframe()).filename
 path = os.path.dirname(os.path.abspath(filename))
