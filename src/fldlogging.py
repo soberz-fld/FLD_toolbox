@@ -140,7 +140,7 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
 __init__()
 
 
-def log(text: str = '', debug: str = '', action: str = '', error: str = '', critical: str = '') -> None:
+def log(text: str = '', debug: str = '', action: str = '', alert = '', error: str = '', critical: str = '') -> None:
     """
     This function logs information in logfile.
     I suggest importing it like 'from fld_toolbox.fldlogging import log' so a sample input is
@@ -149,6 +149,7 @@ def log(text: str = '', debug: str = '', action: str = '', error: str = '', crit
      - text is just text.
      - debug for debugging purposes.
      - action is confirmation, that an action is done. It's marked as confirmation.
+     - alert for something strange to notice
      - error is a normal error message
      - critical is a critical error message and is marked as such
     :param Text to log. Each parameter is the type of log entry. You can see all possible types in the description further up.
@@ -162,6 +163,7 @@ def log(text: str = '', debug: str = '', action: str = '', error: str = '', crit
         'text': text,
         'debug': debug,
         'action': action,
+        'alert': alert,
         'error': error,
         'critical': critical
     }
