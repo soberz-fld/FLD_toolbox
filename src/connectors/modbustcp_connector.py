@@ -5,14 +5,14 @@ from ..fldlogging import log
 
 
 def _get_only_16bit_address_from_full_address(full_address: int) -> int:
-    return int(hex(full_address - int(full_address / 10000) * 10000 - 1))
+    return int(str(hex(full_address-int(full_address/10000)*10000-1)).split('x')[1], 16)
 
 
 class ModbusTCPConnector:
     _pymodbustcp = None
 
-    def __init__(self, ip_address: str, port: int = 502, unit_it: int = 1, auto_open: bool = True):
-        self._pymodbustcp = pyModbusTCP.client.ModbusClient(host=ip_address, port=port, unit_id=unit_it, auto_open=auto_open)
+    def __init__(self, ip_address: str, port: int, unit_it: int = 1, auto_open: bool = True, auto_close: bool = True, debug_rx_tx: bool = False):
+        self._pymodbustcp = pyModbusTCP.client.ModbusClient(host=ip_address, port=port, unit_id=unit_it, auto_open=auto_open, auto_close=auto_close, debug=debug_rx_tx)
 
     def _read_float(self, only_16bit_address: int, size: int = 1, input_true_holding_false: bool = False) -> (list[float], None):
         """
