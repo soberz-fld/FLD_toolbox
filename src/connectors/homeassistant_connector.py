@@ -44,11 +44,11 @@ class HomeAssistantConnector:
         check_if_entity_name_valid(entity_id)
 
         data = {
-            'state': state
+            'state': str(state)
         }
         if attr is not None:
             data['attributes'] = attr
-        data = str(data).replace('"', '`').replace("'", '"')
+        data = str(data).replace('"', '`').replace("'", '"').encode('utf-8')
 
         res = requests.post(self._ha_api_url + '/states/' + entity_id, headers=self._ha_api_headers, data=data)
         if res.status_code == 200 or res.status_code == 201:
