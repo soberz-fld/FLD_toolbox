@@ -1,5 +1,6 @@
 import Levenshtein
 
+
 def get_similarity_of_string_beginnings(string1: str, string2: str, length_to_compare: int = 0) -> list[float]:
     """
     Compares the two strings but only the length of the shortest one. If one string is 'Titanium' and one is 'Titanium (Remix)', it only compares the length of 'Titanium' so it would be 100% similarity. But it gives you the ratio of the lengths.

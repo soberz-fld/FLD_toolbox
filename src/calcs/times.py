@@ -1,15 +1,28 @@
 import datetime
 import time
 
+
 def convert_utc_to_cet(utc_time: datetime.datetime) -> datetime.datetime:
     epoch = time.mktime(utc_time.timetuple())
     offset = datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)
     return utc_time + offset
 
+
 def convert_cet_to_utc(cet_time: datetime.datetime) -> datetime.datetime:
     epoch = time.mktime(cet_time.timetuple())
     offset = datetime.datetime.utcfromtimestamp(epoch) - datetime.datetime.fromtimestamp(epoch)
     return cet_time + offset
+
+
+def calculate_if_year_is_leapyear(p_year: int) -> bool:
+    leapyear = False
+    if p_year % 4 == 0:
+        leapyear = True
+    if p_year % 100 == 0:
+        leapyear = False
+    if p_year % 400 == 0:
+        leapyear = True
+    return leapyear
 
 
 def get_next_day_as_ints(p_year: int, p_month: int, p_day: int) -> tuple[int, int, int]:
@@ -30,7 +43,7 @@ def get_next_day_as_ints(p_year: int, p_month: int, p_day: int) -> tuple[int, in
             return p_year, p_month, p_day + 1
         # End of february
         elif p_month == 2:
-            if self.calculate_if_year_is_leapyear(p_year) and p_day == 28:
+            if calculate_if_year_is_leapyear(p_year) and p_day == 28:
                 return p_year, p_month, 29
             else:
                 return p_year, 3, 1
@@ -45,17 +58,7 @@ def get_next_day_as_ints(p_year: int, p_month: int, p_day: int) -> tuple[int, in
             print('Error: get_next_day_as_ints - out of handling conditions')
 
 
-def calculate_if_year_is_leapyear(p_year: int) -> bool:
-    schalt = False
-    if p_year % 4 == 0:
-        schalt = True
-    if p_year % 100 == 0:
-        schalt = False
-    if p_year % 400 == 0:
-        schalt = True
-    return schalt
-
-def check_datetime_intervall(from_datetime: datetime.datetime, to_datetime: datetime.datetime, use_utc: bool = False) -> tuple[datetime.datetime, datetime.datetime]:
+def check_datetime_interval(from_datetime: datetime.datetime, to_datetime: datetime.datetime, use_utc: bool = False) -> tuple[datetime.datetime, datetime.datetime]:
     """
     If identical: From 00:00:00 to 23:59:59 (matching cet even if time is given in utc)
     If to_datetime is before from_datetime: Fixes order
@@ -74,6 +77,7 @@ def check_datetime_intervall(from_datetime: datetime.datetime, to_datetime: date
             from_datetime = datetime.datetime(from_datetime.year, from_datetime.month, from_datetime.day, 0, 0, 000000)
             to_datetime = datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999)
     return from_datetime, to_datetime
+
 
 def get_datetime_from_date(date: datetime.date) -> datetime.datetime:
     return datetime.datetime(date.year, date.month, date.day, 0, 0, 0, 000000)

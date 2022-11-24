@@ -7,6 +7,11 @@ from ..fldlogging import log
 from ..calcs import times
 
 
+def check_if_entity_name_valid(entity_id: str) -> None:
+    if re.match('^[A-Za-z0-9_]+\\.[A-Za-z0-9_]+$', entity_id) is None:
+        raise HomeassistantConnectorException('The entity id string is not a valid entity id')
+
+
 class HomeAssistantConnector:
     _ha_api_url, _ha_api_headers = None, None
 
@@ -26,7 +31,7 @@ class HomeAssistantConnector:
             return None
 
     def get_state(self, entity_id: str) -> (dict, None):
-        self.check_if_entity_name_valid(entity_id)
+        check_if_entity_name_valid(entity_id)
 
         res = requests.get(self._ha_api_url + '/states/' + entity_id, headers=self._ha_api_headers)
         if res.status_code == 200 or res.status_code == 201:
@@ -36,7 +41,7 @@ class HomeAssistantConnector:
             return None
 
     def post_state(self, entity_id: str, state, attr: dict = None) -> bool:
-        self.check_if_entity_name_valid(entity_id)
+        check_if_entity_name_valid(entity_id)
 
         data = {
             'state': state
@@ -51,10 +56,6 @@ class HomeAssistantConnector:
         else:
             return False
 
-    def check_if_entity_name_valid(self, entity_id: str) -> None:
-        if re.match('^[A-Za-z0-9_]+\.[A-Za-z0-9_]+$', entity_id) is None:
-            raise HomeassistantConnectorException('The entity id string is not a valid entity id')
-
 
 class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
     _db = None
@@ -68,8 +69,8 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         """
         Standard: From today 00:00:00 to 23:59:59
         """
-        self.check_if_entity_name_valid(entity_id)
-        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp, True)
+        check_if_entity_name_valid(entity_id)
+        from_utc_timestamp, to_utc_timestamp = times.check_datetime_interval(from_utc_timestamp, to_utc_timestamp, True)
 
         # Conditions
         sql_threshold = ''
@@ -97,8 +98,8 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         """
         Standard: From today 00:00:00 to 23:59:59
         """
-        self.check_if_entity_name_valid(entity_id)
-        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp, True)
+        check_if_entity_name_valid(entity_id)
+        from_utc_timestamp, to_utc_timestamp = times.check_datetime_interval(from_utc_timestamp, to_utc_timestamp, True)
 
         # Conditions
         sql_threshold = ''
@@ -133,8 +134,8 @@ class HomeAssistantWithDatabaseConnector(HomeAssistantConnector):
         """
         Standard: From today 00:00:00 to 23:59:59
         """
-        self.check_if_entity_name_valid(entity_id)
-        from_utc_timestamp, to_utc_timestamp = times.check_datetime_intervall(from_utc_timestamp, to_utc_timestamp, True)
+        check_if_entity_name_valid(entity_id)
+        from_utc_timestamp, to_utc_timestamp = times.check_datetime_interval(from_utc_timestamp, to_utc_timestamp, True)
 
         # Conditions
         sql_threshold = ''

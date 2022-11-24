@@ -1,11 +1,13 @@
 import json
 import os
 
-def format_byte_to_dict(bytelist: bytes) -> dict:
-    #TODO: Check if bytes can be translated to dict
-    string = bytelist.decode('utf8').replace("'", '"')
+
+def format_byte_to_dict(bytes_dict: bytes) -> dict:
+    # TODO: Check if bytes can be translated to dict
+    string = bytes_dict.decode('utf8').replace("'", '"')
     jsoned = json.loads(string)
     return jsoned
+
 
 def save_list_of_dicts_to_csv(self, list_of_dicts: list[dict], path: str = 'saved_list.csv'):
     if not list_of_dicts:
@@ -13,8 +15,8 @@ def save_list_of_dicts_to_csv(self, list_of_dicts: list[dict], path: str = 'save
     else:  # List is not empty
         filename, file_ext = os.path.splitext(path)
         list_of_all_keys = []
-        for dict in list_of_dicts:
-            for key in dict.keys():
+        for dict_obj in list_of_dicts:
+            for key in dict_obj.keys():
                 if key not in list_of_all_keys:
                     list_of_all_keys.append(key)
         file_exists = True
@@ -33,11 +35,11 @@ def save_list_of_dicts_to_csv(self, list_of_dicts: list[dict], path: str = 'save
                 line += ';'
             line += '\n'
             csv.write(line)
-            for dict in list_of_dicts:
+            for dict_obj in list_of_dicts:
                 line = ''
                 for key in list_of_all_keys:
                     try:
-                        line += str(dict[key])
+                        line += str(dict_obj[key])
                     except KeyError as e:
                         pass
                     line += ';'

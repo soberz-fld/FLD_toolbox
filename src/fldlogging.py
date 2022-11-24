@@ -32,8 +32,7 @@ def __initialize_logfile_if_necessary_() -> None:
     __logfile = open(__logfile_path, mode='r+', encoding='utf-8')
     content = __logfile.read()
     if content == '':
-        text_to_logfile = 'FLD-ToolBox logging\nThis is Logfile number ' + str(__logfile_number).zfill(
-            4) + '\n\nThis file can be analysed by RegEx:\n\\n([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+)\n\n'  # TODO
+        text_to_logfile = 'FLD-ToolBox logging\nThis is Logfile number ' + str(__logfile_number).zfill(4) + '\n\nThis file can be analysed by RegEx:\n\\n([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+)\n\n'
         # Delimiter line
         text_to_logfile += ''.ljust(26, '-')[0:26]
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
