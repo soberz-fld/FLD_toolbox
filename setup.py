@@ -11,7 +11,9 @@ setup(
     packages=['fld_toolbox', 'fld_toolbox.calcs', 'fld_toolbox.networking', 'fld_toolbox.connectors'],
     install_requires=[
         'Levenshtein',
-        'mariadb'
+        'mariadb',
+        'pyModbusTCP',
+        'schedule'
     ],
     classifiers=[],
 )

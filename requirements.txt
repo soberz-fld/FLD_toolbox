@@ -1,7 +1,7 @@
 pip
 setuptools
-wheel
+
 Levenshtein
 mariadb
-requests
 pyModbusTCP
+schedule
