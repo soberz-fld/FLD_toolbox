@@ -14,7 +14,7 @@ class ModbusTCPConnector:
     def __init__(self, ip_address: str, port: int, unit_it: int = 1, auto_open: bool = True, auto_close: bool = True, debug_rx_tx: bool = False):
         self._pymodbustcp = pyModbusTCP.client.ModbusClient(host=ip_address, port=port, unit_id=unit_it, auto_open=auto_open, auto_close=auto_close, debug=debug_rx_tx)
 
-    def _read_float(self, only_16bit_address: int, size: int = 1, input_true_holding_false: bool = False) -> (list[float], None):
+    def _read_float(self, only_16bit_address: int, size: int = 1, input_true_holding_false: bool = False) -> (float, None):
         """
         Reference to:
         https://pymodbustcp.readthedocs.io/en/latest/examples/client_float.html
@@ -25,11 +25,15 @@ class ModbusTCPConnector:
         else:  # Input register
             reg_l = self._pymodbustcp.read_input_registers(only_16bit_address, size)
         if reg_l:
-            return [pyModbusTCP.utils.decode_ieee(f) for f in pyModbusTCP.utils.word_list_to_long(reg_l)]
+            try:
+                return [pyModbusTCP.utils.decode_ieee(f) for f in pyModbusTCP.utils.word_list_to_long(reg_l)][0]
+            except IndexError as e:
+                log(error='Error reading first element of result list: ' + str(e))
+                return None
         else:
             return None
 
-    def _read_register(self, address: int, number_of_registers_to_read_from: int = 1, data_type: type = int, input_true_holding_false: bool = False) -> (list[int], list[float], None):
+    def _read_register(self, address: int, number_of_registers_to_read_from: int = 1, data_type: type = int, input_true_holding_false: bool = False) -> (int, float, None):
 
         result = None
 
@@ -37,10 +41,14 @@ class ModbusTCPConnector:
             if data_type == float:
                 result = self._read_float(address, number_of_registers_to_read_from, input_true_holding_false)
             elif data_type == int:
-                if input_true_holding_false:
-                    result = self._pymodbustcp.read_input_registers(address, number_of_registers_to_read_from)
-                else:
-                    result = self._pymodbustcp.read_holding_registers(address, number_of_registers_to_read_from)
+                try:
+                    if input_true_holding_false:
+                        result = self._pymodbustcp.read_input_registers(address, number_of_registers_to_read_from)[0]
+                    else:
+                        result = self._pymodbustcp.read_holding_registers(address, number_of_registers_to_read_from)[0]
+                except IndexError as e:
+                    log(error='Error reading first element of result list: ' + str(e))
+                    return None
             else:
                 log(error='data_type not requestable')
                 return None
@@ -61,32 +69,36 @@ class ModbusTCPConnector:
 
         return result
 
-    def read_input_register(self, address: int, number_of_registers_to_read_from: int = 1, data_type: type = int) -> (list[int], list[float], None):
+    def read_input_register(self, address: int, number_of_registers_to_read_from: int = 1, data_type: type = int) -> (int, float, None):
         return self._read_register(address, number_of_registers_to_read_from, data_type, True)
 
-    def read_holding_register(self, address: int, number_of_registers_to_read_from: int = 1, data_type: type = int) -> (list[int], list[float], None):
+    def read_holding_register(self, address: int, number_of_registers_to_read_from: int = 1, data_type: type = int) -> (int, float, None):
         return self._read_register(address, number_of_registers_to_read_from, data_type, False)
 
-    def _read_bit(self, address: int, number_of_registers_to_read_from: int = 1, coil_true_discrete_false: bool = False) -> (list[bool], None):
+    def _read_bit(self, address: int, number_of_registers_to_read_from: int = 1, coil_true_discrete_false: bool = False) -> (bool, None):
 
         result = None
 
         addr_hex = _get_only_16bit_address_from_full_address(address)
 
-        if coil_true_discrete_false:
-            result = self._pymodbustcp.read_coils(addr_hex, number_of_registers_to_read_from)
-        else:
-            result = self._pymodbustcp.read_discrete_inputs(addr_hex, number_of_registers_to_read_from)
+        try:
+            if coil_true_discrete_false:
+                result = self._pymodbustcp.read_coils(addr_hex, number_of_registers_to_read_from)[0]
+            else:
+                result = self._pymodbustcp.read_discrete_inputs(addr_hex, number_of_registers_to_read_from)[0]
+        except IndexError as e:
+            log(error='Error reading first element of result list: ' + str(e))
+            return None
 
         if result is None:
             log(alert='Result of reading bit is empty')
 
         return result
 
-    def read_coil(self, address: int, number_of_registers_to_read_from: int = 1) -> (list[bool], None):
+    def read_coil(self, address: int, number_of_registers_to_read_from: int = 1) -> (bool, None):
         return self._read_bit(address, number_of_registers_to_read_from, False)
 
-    def read_discrete(self, address: int, number_of_registers_to_read_from: int = 1) -> (list[bool], None):
+    def read_discrete(self, address: int, number_of_registers_to_read_from: int = 1) -> (bool, None):
         return self._read_bit(address, number_of_registers_to_read_from, True)
 
     def _write_float(self, only_16bit_address: int, floats_list: list[float]) -> bool:
