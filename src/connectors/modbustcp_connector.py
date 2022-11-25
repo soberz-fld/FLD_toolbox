@@ -177,8 +177,11 @@ class ModbusTcpHomeAssistantGateway(ModbusTCPConnector):
         super().__init__(modbustcp_ip_address, modbustcp_port, modbustcp_unit_it, modbustcp_auto_open, modbustcp_auto_close, modbustcp_debug_rx_tx)
         self._homeassistant_connector = homeassistant_connector
 
-    def modbus_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
-        result = self.read_input_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type)
+    def _register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, input_true_holding_false: bool, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
+        if input_true_holding_false:
+            result = self.read_input_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type)
+        else:
+            result = self.read_holding_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type)
 
         attr = dict()
         if ha_unit_of_measurement != '':
@@ -195,3 +198,8 @@ class ModbusTcpHomeAssistantGateway(ModbusTCPConnector):
         else:
             log(error='Result empty')
             return False
+
+    def modbus_input_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
+        return self._register_to_homeassistant(mb_address, mb_number_of_registers_to_read_from, mb_data_type, True, ha_entity_id, ha_unit_of_measurement, ha_device_class, ha_friendly_name, **ha_attributes)
+    def modbus_holding_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
+        return self._register_to_homeassistant(mb_address, mb_number_of_registers_to_read_from, mb_data_type, False, ha_entity_id, ha_unit_of_measurement, ha_device_class, ha_friendly_name, **ha_attributes)
