@@ -5,7 +5,8 @@ from ..fldlogging import log
 
 
 class ModbusTcpHomeAssistantGateway:
-    def __int__(self, homeassistant_connector: HomeAssistantConnector, modbustcp_connector: ModbusTCPConnector):
+    def __init__(self, homeassistant_connector: HomeAssistantConnector, modbustcp_connector: ModbusTCPConnector):
+
         self._homeassistant_connector = homeassistant_connector
         self._modbustcp_connector = modbustcp_connector
 
