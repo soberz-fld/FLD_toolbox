@@ -28,7 +28,7 @@ class ModbusTCPConnector:
         if reg_l:
             try:
                 return [pyModbusTCP.utils.decode_ieee(f) for f in pyModbusTCP.utils.word_list_to_long(reg_l)][0]
-            except IndexError as e:
+            except TypeError as e:
                 log(error='Error reading first element of result list: ' + str(e))
                 return None
         else:
@@ -47,7 +47,7 @@ class ModbusTCPConnector:
                         result = self._pymodbustcp.read_input_registers(address, number_of_registers_to_read_from)[0]
                     else:
                         result = self._pymodbustcp.read_holding_registers(address, number_of_registers_to_read_from)[0]
-                except IndexError as e:
+                except TypeError as e:
                     log(error='Error reading first element of result list: ' + str(e))
                     return None
             else:
@@ -87,7 +87,7 @@ class ModbusTCPConnector:
                 result = self._pymodbustcp.read_coils(addr_hex, number_of_registers_to_read_from)[0]
             else:
                 result = self._pymodbustcp.read_discrete_inputs(addr_hex, number_of_registers_to_read_from)[0]
-        except IndexError as e:
+        except TypeError as e:
             log(error='Error reading first element of result list: ' + str(e))
             return None
 
