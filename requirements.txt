@@ -1,6 +1,7 @@
 pip
 setuptools
 
+requests
 Levenshtein
 mariadb
 pyModbusTCP
