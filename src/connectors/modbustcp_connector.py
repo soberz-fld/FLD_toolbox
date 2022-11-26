@@ -66,7 +66,7 @@ class ModbusTCPConnector:
             return None
 
         if result is None:
-            log(alert=f'Result of reading register is empty: address { str(address) }; register count: { str(number_of_registers_to_read_from) }; data type: { str(data_type) }; type: { "input" if input_true_holding_false else "holding" }')
+            log(alert=f'Result of reading register is empty: address {str(address)}; register count: {str(number_of_registers_to_read_from)}; data type: {str(data_type)}; type: {"input" if input_true_holding_false else "holding"}')
 
         return result
 
@@ -92,7 +92,7 @@ class ModbusTCPConnector:
             return None
 
         if result is None:
-            log(alert=f'Result of reading bit is empty: address { str(address) }; register count: { str(number_of_registers_to_read_from) }; type: { "coil" if coil_true_discrete_false else "dicrete" }')
+            log(alert=f'Result of reading bit is empty: address {str(address)}; register count: {str(number_of_registers_to_read_from)}; type: {"coil" if coil_true_discrete_false else "dicrete"}')
 
         return result
 
@@ -177,29 +177,29 @@ class ModbusTcpHomeAssistantGateway(ModbusTCPConnector):
         super().__init__(modbustcp_ip_address, modbustcp_port, modbustcp_unit_it, modbustcp_auto_open, modbustcp_auto_close, modbustcp_debug_rx_tx)
         self._homeassistant_connector = homeassistant_connector
 
-    def _register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, input_true_holding_false: bool, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
+    def _register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, input_true_holding_false: bool, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', ha_state_factor: (int, float) = 1, **ha_attributes) -> bool:
         if input_true_holding_false:
-            result = self.read_input_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type)
+            result = self.read_input_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type) * ha_state_factor
         else:
-            result = self.read_holding_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type)
+            result = self.read_holding_register(mb_address, mb_number_of_registers_to_read_from, mb_data_type) * ha_state_factor
 
-        attr = dict()
-        if ha_unit_of_measurement != '':
-            attr['unit_of_measurement'] = ha_unit_of_measurement
-        if ha_device_class != '':
-            attr['device_class'] = ha_device_class
-        if ha_friendly_name != '':
-            attr['friendly_name'] = ha_friendly_name
-        for kv in ha_attributes:
-            attr[kv] = ha_attributes[kv]
-
-        if result:
+        if result is not None:
+            attr = dict()
+            if ha_unit_of_measurement != '':
+                attr['unit_of_measurement'] = ha_unit_of_measurement
+            if ha_device_class != '':
+                attr['device_class'] = ha_device_class
+            if ha_friendly_name != '':
+                attr['friendly_name'] = ha_friendly_name
+            for kv in ha_attributes:
+                attr[kv] = ha_attributes[kv]
             return self._homeassistant_connector.post_state(ha_entity_id, result.__round__(2), attr)
         else:
-            log(error='Result empty')
+            log(error=f'Result empty: address {str(mb_address)}; register count: {str(mb_number_of_registers_to_read_from)}; data type: {str(mb_data_type)}; type: {"input" if input_true_holding_false else "holding"}')
             return False
 
-    def modbus_input_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
-        return self._register_to_homeassistant(mb_address, mb_number_of_registers_to_read_from, mb_data_type, True, ha_entity_id, ha_unit_of_measurement, ha_device_class, ha_friendly_name, **ha_attributes)
-    def modbus_holding_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', **ha_attributes) -> bool:
-        return self._register_to_homeassistant(mb_address, mb_number_of_registers_to_read_from, mb_data_type, False, ha_entity_id, ha_unit_of_measurement, ha_device_class, ha_friendly_name, **ha_attributes)
+    def modbus_input_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', ha_state_factor: (int, float) = 1, **ha_attributes) -> bool:
+        return self._register_to_homeassistant(mb_address, mb_number_of_registers_to_read_from, mb_data_type, True, ha_entity_id, ha_unit_of_measurement, ha_device_class, ha_friendly_name, ha_state_factor, **ha_attributes)
+
+    def modbus_holding_register_to_homeassistant(self, mb_address: int, mb_number_of_registers_to_read_from: int, mb_data_type: type, ha_entity_id: str, ha_unit_of_measurement: str = '', ha_device_class: str = '', ha_friendly_name: str = '', ha_state_factor: (int, float) = 1, **ha_attributes) -> bool:
+        return self._register_to_homeassistant(mb_address, mb_number_of_registers_to_read_from, mb_data_type, False, ha_entity_id, ha_unit_of_measurement, ha_device_class, ha_friendly_name, ha_state_factor, **ha_attributes)
