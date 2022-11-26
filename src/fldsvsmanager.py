@@ -73,5 +73,6 @@ def module_initializer(list_of_instances: list) -> None:
 
 
 def main_loop():
+    schedule.run_all(5)
     while True:
         schedule.run_pending()
