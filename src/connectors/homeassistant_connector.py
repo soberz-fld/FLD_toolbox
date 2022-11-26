@@ -46,8 +46,13 @@ class HomeAssistantConnector:
         data = {
             'state': str(state)
         }
-        if attr is not None:
-            data['attributes'] = attr
+        if attr is None:
+            attr = dict()
+        try:
+            x = attr['friendly_name']
+        except KeyError:
+            attr['friendly_name'] = re.match('^[A-Za-z0-9_]+\\.([A-Za-z0-9_]+)$', entity_id).group()
+        data['attributes'] = attr
         data = str(data).replace('"', '`').replace("'", '"').encode('utf-8')
 
         res = requests.post(self._ha_api_url + '/states/' + entity_id, headers=self._ha_api_headers, data=data)
