@@ -66,7 +66,7 @@ class ModbusTCPConnector:
             return None
 
         if result is None:
-            log(alert='Result of reading register is empty')
+            log(alert=f'Result of reading register is empty: address { str(address) }; register count: { str(number_of_registers_to_read_from) }; data type: { str(data_type) }; type: { "input" if input_true_holding_false else "holding" }')
 
         return result
 
@@ -92,7 +92,7 @@ class ModbusTCPConnector:
             return None
 
         if result is None:
-            log(alert='Result of reading bit is empty')
+            log(alert=f'Result of reading bit is empty: address { str(address) }; register count: { str(number_of_registers_to_read_from) }; type: { "coil" if coil_true_discrete_false else "dicrete" }')
 
         return result
 
