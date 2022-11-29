@@ -1,5 +1,10 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.1 b2] - 2022.11.29
+### Added
+* media package
+* media.pictures
+* calcs.numbers
 ## [0.0.1 b1] - 2022.11.24
 ### Added
 * ModbusTCP functionalities

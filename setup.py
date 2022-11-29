@@ -8,13 +8,15 @@ setup(
     author='Lars Wilting',
     license='GNU GENERAL PUBLIC LICENSE',
     package_dir={'fld_toolbox': 'src'},
-    packages=['fld_toolbox', 'fld_toolbox.calcs', 'fld_toolbox.networking', 'fld_toolbox.connectors'],
+    packages=['fld_toolbox', 'fld_toolbox.calcs', 'fld_toolbox.networking', 'fld_toolbox.connectors', 'fld_toolbox.media'],
     install_requires=[
         'requests',
-		'Levenshtein',
+        'Levenshtein',
         'mariadb',
         'pyModbusTCP',
-        'schedule'
+        'schedule',
+        'opencv-python',
+        'numpy'
     ],
     classifiers=[],
 )

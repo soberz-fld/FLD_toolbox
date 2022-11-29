@@ -6,3 +6,5 @@ Levenshtein
 mariadb
 pyModbusTCP
 schedule
+opencv-python
+numpy
