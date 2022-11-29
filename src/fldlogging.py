@@ -86,8 +86,7 @@ def __update_logfile_path_and_check_maximum_size() -> None:
     global __log_temp_counter
     __log_temp_counter = 0
     if __project_path == '':
-        __logfile_path = os.getenv('appdata') + '\\FLD-VT\\' + __logfile_name + '_' + str(__logfile_number).zfill(
-            4) + '.log'
+        __logfile_path = os.getenv('appdata') + '\\FLD-VT\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
     else:
         __logfile_path = __project_path + '\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
     try:
@@ -115,7 +114,7 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
             __project_path = path_temp  # ... set this path as root ...
         else:  # ... otherwise ...
             re_match = re.match('^(.*)\\\\[^\\\\]+$', path_temp)  # ... move one folder up.
-            if re_match != None:  # if parent folder found
+            if re_match is not None:  # if parent folder found
                 path_temp = re_match.group(1)
             else:
                 break  # No project root found
@@ -129,9 +128,7 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
     # Setting project name (optional)
     if project_name != '':
         global __logfile_name
-        __logfile_name = ''.join([i if ord(i) < 128 else '#' for i in project_name]).replace('/', '#').replace('\\',
-                                                                                                               '#').replace(
-            '.', '#').replace(' ', '#') + '_logs'
+        __logfile_name = ''.join([i if ord(i) < 128 else '#' for i in project_name]).replace('/', '#').replace('\\', '#').replace('.', '#').replace(' ', '#') + '_logs'
 
     __update_logfile_path_and_check_maximum_size()
     __initialize_logfile_if_necessary_()  # If only empty logfile exists, it needs the head
@@ -140,20 +137,18 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
 __init__()
 
 
-def log(text: str = '', debug: str = '', action: str = '', alert = '', error: str = '', critical: str = '') -> None:
+def log(text: str = '', debug: str = '', action: str = '', alert='', error: str = '', critical: str = '') -> None:
     """
     This function logs information in logfile.
     I suggest importing it like 'from fld_toolbox.fldlogging import log' so a sample input is
        log(error='TextToLog')
-    So you choose the type of log entry as name of the kwarg. You can choose one of the following: text, debug, action, error, critical
-     - text is just text.
-     - debug for debugging purposes.
-     - action is confirmation, that an action is done. It's marked as confirmation.
-     - alert for something strange to notice
-     - error is a normal error message
-     - critical is a critical error message and is marked as such
-    :param Text to log. Each parameter is the type of log entry. You can see all possible types in the description further up.
-    :return: Does not return anything usefull
+    :param text: is just text.
+    :param debug: for debugging purposes. Prints and writes to file depending on _debug_print and _debug_write variables
+    :param action: is confirmation, that an action is done. It's marked as confirmation.
+    :param alert: for something strange to notice
+    :param error: is a normal error message
+    :param critical: is a critical error message and is marked as such
+    :return: Does not return anything
     """
     curframe = inspect.currentframe()
     global __logfile
