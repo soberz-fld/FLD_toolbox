@@ -1,5 +1,6 @@
 import inspect
 import os
+import time
 from datetime import datetime as __datetime
 import re
 
@@ -189,7 +190,10 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
                                                                                                                     '/')
                     if log_type != 'debug' or _debug_write:
                         # Does not write debugs to database if _debug_write is false
-                        __logfile.write(text_to_logfile)
+                        try:
+                            __logfile.write(text_to_logfile)
+                        except ValueError as e:
+                            pass  # TODO: Error "ValueError: I/O operation on closed file." while multi-threading
                     if _debug_print:
                         print("\033[38;2;{};{};{}m{} \033[38;2;255;255;255m".format(255, 128, 0, text_to_logfile[30:]))
                 except KeyError:
