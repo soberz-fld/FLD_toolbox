@@ -18,7 +18,7 @@ class MariaDBConnector:
             )
             self._cursor = self._conn.cursor()
         except mariadb.Error as e:
-            log(critical=str())
+            log(critical=str(e))
             sys.exit()
 
     def execute_statement(self, statement: str, parameter: tuple = None) -> list:

@@ -1,5 +1,8 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.2] - 2023.04.18
+### Added
+* SQLite Connector
 ## [0.0.1 b2] - 2022.11.29
 ### Added
 * media package
