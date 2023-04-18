@@ -113,11 +113,12 @@ class SqliteConnector:
                                    ');'
                                    'INSERT INTO dbaccess (function) VALUES ("CREATE");')
 
-    def exe_sql(self, sql: str, parameters: (dict, enumerate) = ()):
+    def exe_sql(self, sql: str, parameters: (dict, enumerate) = (), expect_exactly_one_value: bool = False):
         """
         Execute a sql line
         :param sql: SQL statement to execute
         :param parameters: Values inserted for placeholder '?' in statement
+        :param expect_exactly_one_value: If true and only one value is given, the value is directly given instead of a list or tuple
         :return: Either none or a value or a list/tuple of values
         """
         try:
@@ -142,11 +143,12 @@ class SqliteConnector:
         self._committer_free = True
 
         # Often results of fetchall are gives as list or list of tuple even when there is just one element
-        if type(result) == list:
-            if len(result) == 1:
-                result = result[0]
-                if type(result) == tuple:
-                    if len(result) == 1:
-                        result = result[0]
+        if expect_exactly_one_value:
+            if type(result) == list:
+                if len(result) == 1:
+                    result = result[0]
+                    if type(result) == tuple:
+                        if len(result) == 1:
+                            result = result[0]
 
         return result
