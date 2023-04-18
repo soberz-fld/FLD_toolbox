@@ -125,7 +125,7 @@ class SqliteConnector:
             result = self._cursor.fetchall()
         except sqlite3.Error as e:
             log(error='SQL execution error <' + str(e) + '> when executing following statement with parameters: ' + sql + ' | ' + str(parameters))
-            result = None
+            raise
 
         # Log it
         statement = sql if parameters == () else sql + ' | ' + str(parameters)
