@@ -117,7 +117,6 @@ class SqliteConnector:
         """
         Execute sql statement
         """
-        result = None
         try:
             self._cursor.execute(sql, parameters)
             result = self._cursor.fetchall()
