@@ -16,7 +16,7 @@ class SqliteConnector:
     _cursor = None  # database cursor. Used for executes etc
     _committer_free: bool = True  # If file is free to commit, False if some instance is writing
 
-    def __init__(self, database: str = 'database.db', create_new_if_not_existing: bool = False, sql_script_if_creating_new: str = ''):
+    def __init__(self, database: str = 'database.sqlite3', create_new_if_not_existing: bool = False, sql_script_if_creating_new: str = ''):
         """
         Connector for handling access to SQLite database. Keep in mind that there will be an error if the database file does not exist and you do not with to create a new one.
         :param database: path to database
@@ -81,9 +81,6 @@ class SqliteConnector:
         _opened_database_files.append(self._database_path)
         log(action='Database ' + self._database_name + ' opened')
 
-        print(_opened_database_files)
-        # TODO
-
     def __del__(self):
         # Closing connection
         try:
@@ -102,6 +99,9 @@ class SqliteConnector:
         return str(self.__repr__()) + ' handling database file ' + str(self._database_path)
 
     def close(self):
+        """
+        Closing the database the safe way
+        """
         self.__del__()
 
     def _create_dbaccess_table(self):
@@ -115,7 +115,10 @@ class SqliteConnector:
 
     def exe_sql(self, sql: str, parameters: (dict, enumerate) = ()):
         """
-        Execute sql statement
+        Execute a sql line
+        :param sql: SQL statement to execute
+        :param parameters: Values inserted for placeholder '?' in statement
+        :return: Either none or a value or a list/tuple of values
         """
         try:
             self._cursor.execute(sql, parameters)
@@ -135,7 +138,15 @@ class SqliteConnector:
         while not self._committer_free:
             time.sleep(1)
         self._committer_free = False
-        print(self._conn.commit())
+        self._conn.commit()
         self._committer_free = True
+
+        # Often results of fetchall are gives as list or list of tuple even when there is just one element
+        if type(result) == list:
+            if len(result) == 1:
+                result = result[0]
+                if type(result) == tuple:
+                    if len(result) == 1:
+                        result = result[0]
 
         return result
