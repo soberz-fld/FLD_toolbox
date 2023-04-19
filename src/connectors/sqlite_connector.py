@@ -48,8 +48,8 @@ class SqliteConnector:
                     log(action='Database ' + str(self._database_path) + ' created and initialized')
 
                 except sqlite3.Error:  # If sqlite error occurs: Remove uninitialized database and close connection
-                    self._conn.close()
                     os.remove(self._database_path)
+                    self._conn.close()
                     raise
 
             else:  # ... else a error must be raised that there is no file
