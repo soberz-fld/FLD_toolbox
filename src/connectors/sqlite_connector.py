@@ -18,7 +18,7 @@ class SqliteConnector:
 
     def __init__(self, database: str = 'database.sqlite3', create_new_if_not_existing: bool = False, sql_script_if_creating_new: str = ''):
         """
-        Connector for handling access to SQLite database. Keep in mind that there will be an error if the database file does not exist and you do not with to create a new one.
+        Connector for handling access to SQLite database. Keep in mind that there will be an error if the database file does not exist, and you do not with to create a new one.
         :param database: path to database
         :param create_new_if_not_existing: If the database should be created if not existing with the sql_script
         :param sql_script_if_creating_new: SQL script to be executed if database doesn't exist
