@@ -39,14 +39,14 @@ class EmailConnector:
             msg.set_content(content)
         # Setting other meta data
         msg['Subject'] = subject
-        if self._from_name != '' and self._from_address != '':
-            msg['From'] = self._from_name + '<' + self._from_address + '>'
-        elif self._from_address != '':
-            msg['From'] = self._from_address + '<' + self._from_address + '>'
-        elif self._from_name != '':
-            msg['From'] = self._from_name + '<' + self._smtp_username + '>'
+        if self._from_name != '' and self._from_name is not None and self._from_address != '' and self._from_address is not None:
+            msg['From'] = str(self._from_name) + '<' + str(self._from_address) + '>'
+        elif self._from_address != '' and self._from_address is not None:
+            msg['From'] = str(self._from_address) + '<' + str(self._from_address) + '>'
+        elif self._from_name != '' and self._from_name is not None:
+            msg['From'] = str(self._from_name) + '<' + str(self._smtp_username) + '>'
         else:
-            msg['From'] = self._smtp_username + '<' + self._smtp_username + '>'
+            msg['From'] = str(self._smtp_username) + '<' + str(self._smtp_username) + '>'
         msg['To'] = self._create_string_of_recipients_of_list(to)
         msg['Cc'] = self._create_string_of_recipients_of_list(cc)
         msg['Bcc'] = self._create_string_of_recipients_of_list(bcc)
