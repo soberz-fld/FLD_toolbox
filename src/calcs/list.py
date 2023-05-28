@@ -44,7 +44,7 @@ def get_list_from_stringed_list(stringed_list: str) -> list[str]:
         pattern = "\'((?:[^\']+)+)\',?"
         findings = re.findall(pattern, stringed_list)
     except TypeError as e:
-        if 'TypeError: expected string or bytes-like object, got' in str(e):
+        if 'expected string or bytes-like object, got' in str(e):
             findings = list()
         else:
             raise e from None
