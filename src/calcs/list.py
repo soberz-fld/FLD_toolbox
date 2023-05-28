@@ -40,6 +40,12 @@ def get_list_from_stringed_list(stringed_list: str) -> list[str]:
     :param stringed_list: A string resulting from a typecast from list[str] to str
     :return: List of strings
     """
-    pattern = "\'((?:[^\']+)+)\',?"
-    findings = re.findall(pattern, stringed_list)
+    try:
+        pattern = "\'((?:[^\']+)+)\',?"
+        findings = re.findall(pattern, stringed_list)
+    except TypeError as e:
+        if 'TypeError: expected string or bytes-like object, got' in str(e):
+            findings = list()
+        else:
+            raise e from None
     return findings

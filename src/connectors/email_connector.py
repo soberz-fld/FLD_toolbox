@@ -25,7 +25,7 @@ class EmailConnector:
         # Initializing SMTP object
         self._smtp_handler = smtplib.SMTP_SSL(self._smtp_server, self._smtp_port)
 
-    def send_email(self, subject: str, content: str, to: list[str], cc: list[str] = None, bcc: list[str] = None, content_is_html: bool = False):  # TODO: Return something
+    def send_email(self, subject: str, content: str, to: list[str] = None, cc: list[str] = None, bcc: list[str] = None, content_is_html: bool = False):  # TODO: Return something
 
         self._smtp_handler.ehlo()
         self._smtp_handler.login(self._smtp_username, self._smtp_password)
@@ -50,6 +50,9 @@ class EmailConnector:
         msg['To'] = self._create_string_of_recipients_of_list(to)
         msg['Cc'] = self._create_string_of_recipients_of_list(cc)
         msg['Bcc'] = self._create_string_of_recipients_of_list(bcc)
+
+        if msg['To'] == '' and msg['Cc'] == '' and msg['Bcc'] == '':
+            raise ValueError('No recipient')
 
         self._smtp_handler.send_message(msg)
         self._smtp_handler.close()
