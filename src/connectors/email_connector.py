@@ -13,7 +13,7 @@ class EmailConnector:
             smtp_username: str,
             smtp_password: str,
             from_address: str,
-            from_name: str
+            from_name: str = None
     ):
         self._smtp_server = smtp_server
         self._smtp_port = smtp_port
@@ -21,6 +21,9 @@ class EmailConnector:
         self._smtp_password = smtp_password
         self._from_address = from_address
         self._from_name = from_name
+
+        if smtp_server == '' or smtp_server is None or smtp_port == 0 or smtp_port is None or smtp_username == '' or smtp_username is None or from_address == '' or from_address is None:
+            raise ValueError('Server, Port or Username incorrect or missing: Maybe it is None or an empty string?')
 
         # Initializing SMTP object
         self._smtp_handler = smtplib.SMTP_SSL(self._smtp_server, self._smtp_port)
