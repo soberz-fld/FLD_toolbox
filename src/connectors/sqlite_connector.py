@@ -23,13 +23,8 @@ class SqliteConnector:
         :param create_new_if_not_existing: If the database should be created if not existing with the sql_script
         :param sql_script_if_creating_new: SQL script to be executed if database doesn't exist
         """
-        global _opened_database_files
         self._database_path = database
         self._database_name = pathlib.PurePath(database).name
-
-        # First check if instance of connector exists for this database file. If so: Raise Error
-        if self._database_path in _opened_database_files:
-            raise RecursionError('Another connector instance for database "' + self._database_path + '" already exists.')
 
         if not os.path.isfile(self._database_path):  # If database file does not exist...
             if create_new_if_not_existing:  # ...test if a new one should be created ...
@@ -88,10 +83,6 @@ class SqliteConnector:
         except AttributeError as e:
             if not str(e) == "'NoneType' object has no attribute 'close'":  # if self._conn was null, no connection can be closed of course
                 raise
-        # Removing database from opened files
-        global _opened_database_files
-        if self._database_path in _opened_database_files:
-            _opened_database_files.remove(self._database_path)
         # Logging the closing
         log(action='Database ' + self._database_path + ' closed')
 

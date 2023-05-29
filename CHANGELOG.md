@@ -1,5 +1,8 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.4 b1] - 2023.05.29
+### Changed
+* Allow more than one sqlite_connector to be used
 ## [0.0.4] - 2023.05.29
 ### Added
 * Colored_StdInOut
