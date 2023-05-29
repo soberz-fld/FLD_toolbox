@@ -1,5 +1,8 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.4] - 2023.05.29
+### Added
+* Colored_StdInOut
 ## [0.0.3] - 2023.05.27
 ### Added
 * Email Connector

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='fld_toolbox',
-    version="0.0.3",
+    version="0.0.4",
     description='A simple Python toolbox',
     url='https://github.com/soberz-fld/fld_toolbox',
     author='Lars Wilting',
