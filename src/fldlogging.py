@@ -5,9 +5,9 @@ from datetime import datetime as __datetime
 import re
 
 # _debug_print lets you print out the statements, so you do not need a separate print statement while debugging.
-_debug_print = True
+_debug_print = False
 # _debug_write lets you write logs of type debug to file.
-_debug_write = True
+_debug_write = False
 
 __logfile_name = 'logs'  # Filename without extension
 __logfile_number = 0  # Counter of logfile when splitting after maximum filesize is reached
@@ -203,3 +203,8 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
         exit('FileNotFoundError in log')
     except IOError:
         exit('IOError in log')
+    except NameError as e:
+        if str(e) == "name 'open' is not defined":
+            pass
+        else:
+            raise e from None
