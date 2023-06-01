@@ -203,8 +203,3 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
         exit('FileNotFoundError in log')
     except IOError:
         exit('IOError in log')
-    except NameError as e:
-        if str(e) == "name 'open' is not defined":
-            pass
-        else:
-            raise e from None

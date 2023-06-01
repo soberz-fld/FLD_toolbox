@@ -83,8 +83,17 @@ class SqliteConnector:
         except AttributeError as e:
             if not str(e) == "'NoneType' object has no attribute 'close'":  # if self._conn was null, no connection can be closed of course
                 raise
+        except sqlite3.ProgrammingError as e:
+            if not 'SQLite objects created in a thread can only be used in that same thread. The object was created in thread id' in str(e):
+                raise
         # Logging the closing
-        log(action='Database ' + self._database_path + ' closed')
+        try:
+            log(action='Database ' + self._database_path + ' closed')
+        except NameError as e:
+            if str(e) == "name 'open' is not defined":
+                pass
+            else:
+                raise e from None
 
     def __str__(self):  # Giving more information when printing object information
         return str(self.__repr__()) + ' handling database file ' + str(self._database_path)
