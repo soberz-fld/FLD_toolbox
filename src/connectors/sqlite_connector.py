@@ -29,6 +29,9 @@ class SqliteConnector:
         if not os.path.isfile(self._database_path):  # If database file does not exist...
             if create_new_if_not_existing:  # ...test if a new one should be created ...
 
+                # First check if folder exists and create new if not
+                os.makedirs(os.path.dirname(self._database_path), exist_ok=True)
+
                 # Open database
                 self._conn = sqlite3.connect(self._database_path)
 
