@@ -16,6 +16,7 @@ __log_values_delimiter = ' | '  # If changed, you need to change regex pattern i
 __logfile = None  # Here the logfilehandler is stored later
 __log_temp_counter = 0  # If a specific number of logs are written, size of logfile has to be checked. I don't want to check it every time. It may slow down.
 __project_path = ''  # path of project if python file is part of a project that has a main.py in root folder
+__project_subfolder = ''  # Name of subfolder in project where logfiles are stored
 __log_path_of_module_length = 120
 
 
@@ -89,7 +90,7 @@ def __update_logfile_path_and_check_maximum_size() -> None:
     if __project_path == '':
         __logfile_path = os.getenv('appdata') + '\\FLD-VT\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
     else:
-        __logfile_path = __project_path + '\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
+        __logfile_path = __project_path + __project_subfolder + '\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
     try:
         while os.path.getsize(__logfile_path) > 1000000:  # If 10MB, create a new logfile
             __logfile_number += 1
@@ -102,11 +103,14 @@ def __update_logfile_path_and_check_maximum_size() -> None:
         __initialize_logfile_if_necessary_()
 
 
-def __init__(debug_print: bool = True, debug_write: bool = True, project_name: str = '') -> None:
+def __init__(debug_print: bool = True, debug_write: bool = True, project_name: str = '', project_subfolder: str = '') -> None:
     """
     Initialising when imported - check if file exists and if not: Create and prepare it. The file is created in project root if possible. If no main.py is found, __project_path stays empty
-    _debug_print lets you print out the statements, so you do not need a separate print statement while debugging.
-    _debug_write lets you write logs of type debug to file.
+    :param debug_print: lets you print out the statements, so you do not need a separate print statement while debugging.
+    :param debug_write: lets you write logs of type debug to file.
+    :param project_name: Name of project
+    :param project_subfolder: Name of subfolder in which the logfile sould be stored
+    :return: None
     """
     global __project_path
     path_temp = os.path.realpath(os.path.dirname(__file__))
@@ -130,6 +134,12 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
     if project_name != '':
         global __logfile_name
         __logfile_name = ''.join([i if ord(i) < 128 else '#' for i in project_name]).replace('/', '#').replace('\\', '#').replace('.', '#').replace(' ', '#') + '_logs'
+
+    if project_subfolder != '':
+        global __project_subfolder
+        while project_subfolder.startswith("/") or project_subfolder.startswith("\\") or project_subfolder.endswith("/") or project_subfolder.endswith("\\"):
+            project_subfolder = project_subfolder.strip("/\\")
+        __project_subfolder = '\\' + project_subfolder
 
     __update_logfile_path_and_check_maximum_size()
     __initialize_logfile_if_necessary_()  # If only empty logfile exists, it needs the head
