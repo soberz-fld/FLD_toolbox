@@ -18,6 +18,7 @@ __log_temp_counter = 0  # If a specific number of logs are written, size of logf
 __project_path = ''  # path of project if python file is part of a project that has a main.py in root folder
 __project_subfolder = ''  # Name of subfolder in project where logfiles are stored
 __log_path_of_module_length = 120
+__initialized = False
 
 
 def set_debug_print(value: bool):
@@ -143,9 +144,8 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
 
     __update_logfile_path_and_check_maximum_size()
     __initialize_logfile_if_necessary_()  # If only empty logfile exists, it needs the head
-
-
-__init__()
+    global __initialized
+    __initialized = True
 
 
 def log(text: str = '', debug: str = '', action: str = '', alert='', error: str = '', critical: str = '') -> None:
@@ -161,6 +161,9 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
     :param critical: is a critical error message and is marked as such
     :return: Does not return anything
     """
+    if not __initialized:
+        __init__()
+
     curframe = inspect.currentframe()
     global __logfile
 
