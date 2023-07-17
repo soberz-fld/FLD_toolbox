@@ -2,8 +2,8 @@ import numpy
 import struct
 
 
-def decode_idx3(name_of_idx3_file) -> numpy.ndarray:
-    with open(name_of_idx3_file, 'rb') as f:
+def decode_idx(name_of_idx_file) -> numpy.ndarray:
+    with open(name_of_idx_file, 'rb') as f:
         # Read the magic number
         z1, z2, value_type_int, dimensions = struct.unpack(">BBBB", f.read(4))  # Format by https://docs.python.org/3.11/library/struct.html and http://yann.lecun.com/exdb/mnist/
 
@@ -44,7 +44,7 @@ def decode_idx3(name_of_idx3_file) -> numpy.ndarray:
         return dimensional_data
 
 
-def store_as_idx3(array: numpy.ndarray, name_of_idx3_file):
+def store_as_idx(array: numpy.ndarray, name_of_idx_file):
     # Validate the input array
     if not isinstance(array, numpy.ndarray):
         raise ValueError("Input 'array' must be a NumPy array")
@@ -75,7 +75,7 @@ def store_as_idx3(array: numpy.ndarray, name_of_idx3_file):
     dimension_sizes = array.shape
 
     # Open the IDX3 file in binary mode for writing
-    with open(name_of_idx3_file, 'wb') as f:
+    with open(name_of_idx_file, 'wb') as f:
         # Write the magic number, value type, and dimensions to the file
         f.write(struct.pack(">BBBB", 0x00, 0x00, value_type_int, dimensions))
 
