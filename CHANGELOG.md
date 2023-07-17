@@ -1,5 +1,9 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.5] - 2023.07.17
+### Added
+* Package files
+* files.idx3
 ## [0.0.4 b1] - 2023.05.29
 ### Changed
 * Allow more than one sqlite_connector to be used
