@@ -1,5 +1,8 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.5 b1] - 2023.07.18
+### Added
+* calcs/geo
 ## [0.0.5] - 2023.07.17
 ### Added
 * Package files

@@ -8,3 +8,5 @@ pyModbusTCP
 schedule
 opencv-python
 numpy
+geopy
+pyproj

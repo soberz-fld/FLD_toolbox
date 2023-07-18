@@ -16,7 +16,9 @@ setup(
         'pyModbusTCP',
         'schedule',
         'opencv-python',
-        'numpy'
+        'numpy',
+        'geopy',
+        'pyproj'
     ],
     classifiers=[],
 )
