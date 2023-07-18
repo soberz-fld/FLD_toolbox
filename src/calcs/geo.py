@@ -60,12 +60,9 @@ def convert_from_25832_to_gps(x,y):
     return lat, lon
 
 def offset_25832_coordinates(x, y, r, a = 1.5 * math.pi):
-    # Convert d from meters to degrees
-    r_deg = r / 111320.0
-
     # Calculate the offsets in x' and y' direction
-    dx = r_deg * math.cos(a)
-    dy = r_deg * math.sin(a)
+    dx = r * math.cos(a)
+    dy = r * math.sin(a)
 
     # Apply the offsets to the input coordinates
     x_prime = x + dx
