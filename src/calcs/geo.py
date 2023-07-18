@@ -2,28 +2,47 @@ import geopy.geocoders
 import pyproj
 import time
 import math
-import random
+import os
+import src.connectors.sqlite_connector
+
+_cache_path = os.path.expandvars(r'%appdata%\FLD-VT\fld_toolbox\cache.db')
+os.makedirs(os.path.dirname(_cache_path), exist_ok=True)
+_sql_creator = 'CREATE TABLE coord_of_addr (addr VARCHAR(100) PRIMARY KEY, x FLOAT, y FLOAT);'
+_db = src.connectors.sqlite_connector.SqliteConnector(_cache_path, create_new_if_not_existing=True, sql_script_if_creating_new=_sql_creator)
 
 def get_coordinates_of_address(address, crs):
-    # Geocoder-Objekt erstellen
-    geolocator = geopy.geocoders.Nominatim(user_agent="my_geocoder")
 
-    # Adresse in Koordinaten umwandeln
-    location = geolocator.geocode(address)
+    cached = _db.exe_sql('SELECT x, y FROM coord_of_addr WHERE addr = "' + address + '";')
 
-    # CRS-Objekte erstellen
-    crs_source = pyproj.CRS.from_epsg(4326)  # CRS 4326 (WGS84) für Längen- und Breitengrad
-    crs_target = pyproj.CRS.from_epsg(crs)  # CRS 25832 (ETRS89 / UTM Zone 32N) für Koordinaten in Deutschland
+    if cached:
 
-    # Transformer-Objekt erstellen
-    transformer = pyproj.Transformer.from_crs(crs_source, crs_target, always_xy=True)
+        return cached[0]
 
-    # Koordinaten umwandeln
-    x, y = transformer.transform(location.longitude, location.latitude)
+    else:
 
-    time.sleep(1.5)
+        # Geocoder-Objekt erstellen
+        geolocator = geopy.geocoders.Nominatim(user_agent="my_geocoder")
 
-    return x, y
+        # Adresse in Koordinaten umwandeln
+        location = geolocator.geocode(address)
+
+        # CRS-Objekte erstellen
+        crs_source = pyproj.CRS.from_epsg(4326)  # CRS 4326 (WGS84) für Längen- und Breitengrad
+        crs_target = pyproj.CRS.from_epsg(crs)  # CRS 25832 (ETRS89 / UTM Zone 32N) für Koordinaten in Deutschland
+
+        # Transformer-Objekt erstellen
+        transformer = pyproj.Transformer.from_crs(crs_source, crs_target, always_xy=True)
+
+        # Koordinaten umwandeln
+        x, y = transformer.transform(location.longitude, location.latitude)
+
+        # Time between requests!
+        time.sleep(1.5)
+
+        # Write to cache
+        _db.exe_sql('INSERT INTO coord_of_addr VALUES (?,?,?);', (address, x, y))
+
+        return x, y
 
 def get_25832_coordinates_of_address(address):
     return get_coordinates_of_address(address, 25832)
