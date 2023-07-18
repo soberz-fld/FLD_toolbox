@@ -3,12 +3,12 @@ import pyproj
 import time
 import math
 import os
-import src.connectors.sqlite_connector
+from ..connectors import sqlite_connector
 
 _cache_path = os.path.expandvars(r'%appdata%\FLD-VT\fld_toolbox\cache.db')
 os.makedirs(os.path.dirname(_cache_path), exist_ok=True)
 _sql_creator = 'CREATE TABLE coord_of_addr (addr VARCHAR(100) PRIMARY KEY, x FLOAT, y FLOAT);'
-_db = src.connectors.sqlite_connector.SqliteConnector(_cache_path, create_new_if_not_existing=True, sql_script_if_creating_new=_sql_creator)
+_db = sqlite_connector.SqliteConnector(_cache_path, create_new_if_not_existing=True, sql_script_if_creating_new=_sql_creator)
 
 def get_coordinates_of_address(address, crs):
 
