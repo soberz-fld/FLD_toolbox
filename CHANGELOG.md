@@ -1,5 +1,10 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.5 b2] - 2023.07.18
+### Changed
+* dict.py -> dicts.py
+* list.py -> lists.py
+* string.py -> strings.py
 ## [0.0.5 b1] - 2023.07.18
 ### Added
 * calcs/geo
