@@ -19,7 +19,8 @@ setup(
         'numpy',
         'geopy',
         'pyproj',
-        'pytz'
+        'pytz',
+        'pythonping'
     ],
     classifiers=[],
 )

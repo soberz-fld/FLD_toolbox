@@ -11,3 +11,4 @@ numpy
 geopy
 pyproj
 pytz
+pythonping

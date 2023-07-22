@@ -1,5 +1,11 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.5 b3] - 2023.07.22
+### Added
+* ping / latency check
+### Fixed
+* HomeAssistant DB entity_id in states_meta instead of states
+* HomeAssistant time tracking in timestamp instead of datetime
 ## [0.0.5 b2] - 2023.07.18
 ### Changed
 * dict.py -> dicts.py
