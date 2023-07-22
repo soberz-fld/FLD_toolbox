@@ -18,7 +18,8 @@ setup(
         'opencv-python',
         'numpy',
         'geopy',
-        'pyproj'
+        'pyproj',
+        'pytz'
     ],
     classifiers=[],
 )

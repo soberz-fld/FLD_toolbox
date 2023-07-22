@@ -1,5 +1,6 @@
 import datetime
 import time
+import pytz
 
 
 def convert_utc_to_cet(utc_time: datetime.datetime) -> datetime.datetime:
@@ -12,6 +13,28 @@ def convert_cet_to_utc(cet_time: datetime.datetime) -> datetime.datetime:
     epoch = time.mktime(cet_time.timetuple())
     offset = datetime.datetime.utcfromtimestamp(epoch) - datetime.datetime.fromtimestamp(epoch)
     return cet_time + offset
+
+
+def convert_local_time_to_utc(timestamp_local: float, local_timezone: str = 'Europe/Berlin'):
+    # Erstelle ein datetime-Objekt mit der gegebenen lokalen Zeitzone
+    local_datetime = datetime.datetime.fromtimestamp(timestamp_local, pytz.timezone(local_timezone))
+
+    # Konvertiere die lokale Zeitzone in UTC
+    utc_datetime = local_datetime.astimezone(pytz.utc)
+
+    # Gib den UTC-Zeitstempel zurück
+    return utc_datetime.timestamp()
+
+
+def convert_utc_to_local_time(timestamp_utc: float, local_timezone: str = 'Europe/Berlin'):
+    # Erstelle ein datetime-Objekt mit der gegebenen UTC-Zeit
+    utc_datetime = datetime.datetime.fromtimestamp(timestamp_utc, pytz.utc)
+
+    # Konvertiere die UTC-Zeitzone in die gegebene lokale Zeitzone
+    local_datetime = utc_datetime.astimezone(pytz.timezone(local_timezone))
+
+    # Gib den lokalen Zeitstempel zurück
+    return local_datetime.timestamp()
 
 
 def calculate_if_year_is_leapyear(p_year: int) -> bool:
@@ -78,6 +101,19 @@ def check_datetime_interval(from_datetime: datetime.datetime, to_datetime: datet
             to_datetime = datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999)
     return from_datetime, to_datetime
 
+def check_timestamp_interval(from_timestamp: int, to_timestamp: int) -> tuple[int, int]:
+    """
+    If identical: From 00:00:00 to 23:59:59
+    If to_timestamp is before from_timestamp: Fixes order
+    """
+    if to_timestamp < from_timestamp:  # If from date is after to date
+        return to_timestamp, from_timestamp
+    if from_timestamp == to_timestamp:
+        from_datetime = datetime.datetime.fromtimestamp(from_timestamp)
+        from_timestamp = int(datetime.datetime(from_datetime.year, from_datetime.month, from_datetime.day, 0, 0, 0).timestamp())
+        to_datetime = datetime.datetime.fromtimestamp(to_timestamp)
+        to_timestamp = int(datetime.datetime(to_datetime.year, to_datetime.month, to_datetime.day, 23, 59, 59, 999999).timestamp())
+    return from_timestamp, to_timestamp
 
 def get_datetime_from_date(date: datetime.date) -> datetime.datetime:
     return datetime.datetime(date.year, date.month, date.day, 0, 0, 0, 000000)
