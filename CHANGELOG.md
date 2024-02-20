@@ -1,5 +1,9 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.5 b4] - 2024.02.20
+### Added
+* Dynamic list to table string
+* MariaDB connector can return header names
 ## [0.0.5 b3] - 2023.07.22
 ### Added
 * ping / latency check
