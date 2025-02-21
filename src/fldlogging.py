@@ -148,6 +148,9 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
     __initialized = True
 
 
+__log_stack = []
+
+
 def log(text: str = '', debug: str = '', action: str = '', alert='', error: str = '', critical: str = '') -> None:
     """
     This function logs information in logfile.
@@ -161,11 +164,8 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
     :param critical: is a critical error message and is marked as such
     :return: Does not return anything
     """
-    try:
-        if not __initialized:
-            __init__()
-    except:
-        pass
+    if not __initialized:
+        __init__()
 
     curframe = inspect.currentframe()
     global __logfile
@@ -187,7 +187,6 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
         __update_logfile_path_and_check_maximum_size()
 
     try:
-        __logfile = open(__logfile_path, mode='a', encoding='utf-8')
         for log_type in __log_types:
             if __log_types[log_type] != '':
                 try:
@@ -205,16 +204,21 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
                     text_to_logfile += str(__log_types[log_type]).replace('\n', '\\n').replace('\t', '\\t').replace('|', '/')
                     if log_type != 'debug' or _debug_write:
                         # Does not write debugs to database if _debug_write is false
-                        try:
-                            __logfile.write(text_to_logfile)
-                        except ValueError as e:
-                            pass  # TODO: Error "ValueError: I/O operation on closed file." while multi-threading
+                        global __log_stack
+                        __log_stack.append(text_to_logfile)
                     if _debug_print:
                         print("\033[38;2;{};{};{}m{} \033[38;2;255;255;255m".format(255, 128, 0, text_to_logfile[30:]))
                 except KeyError:
                     pass
-        __logfile.close()
-    except FileNotFoundError:
-        exit('FileNotFoundError in log')
-    except IOError:
-        exit('IOError in log')
+    except Exception as e:
+        print(f'ERROR in fld_toolbox.fldlogging: {e.message}, {e.args}')
+
+
+def __log_write_to_file_thread():
+    while True:
+        try:
+            if __log_stack:
+                with open(__logfile_path, mode='a', encoding='utf-8') as logfile:
+                    logfile.write(__log_stack.pop())
+        except Exception as e:
+            print(f'ERROR in fld_toolbox.fldlogging: {e.message}, {e.args}')

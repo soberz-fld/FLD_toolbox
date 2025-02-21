@@ -1,5 +1,10 @@
 # Change Log
 In this document, most significant changes are noted.
+## [0.0.6] - 2025.02.21
+### Changed
+* Logging: Writing to file runs now in only one thread.
+### Fixed
+* Logging: Can be used in multi thread environments.
 ## [0.0.5 b4] - 2024.02.20
 ### Added
 * Dynamic list to table string
