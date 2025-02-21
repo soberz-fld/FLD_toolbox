@@ -161,19 +161,22 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
     :param critical: is a critical error message and is marked as such
     :return: Does not return anything
     """
-    if not __initialized:
-        __init__()
+    try:
+        if not __initialized:
+            __init__()
+    except:
+        pass
 
     curframe = inspect.currentframe()
     global __logfile
 
     # Each parameter to dict
     __log_types = {
-        'text': text,
-        'debug': debug,
-        'action': action,
-        'alert': alert,
-        'error': error,
+        'text':     text,
+        'debug':    debug,
+        'action':   action,
+        'alert':    alert,
+        'error':    error,
         'critical': critical
     }
 
@@ -199,8 +202,7 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
                     text_to_logfile += __log_values_delimiter
                     text_to_logfile += inspect.getouterframes(curframe, 2)[1][3].ljust(40, ' ')[0:40]
                     text_to_logfile += __log_values_delimiter
-                    text_to_logfile += str(__log_types[log_type]).replace('\n', '\\n').replace('\t', '\\t').replace('|',
-                                                                                                                    '/')
+                    text_to_logfile += str(__log_types[log_type]).replace('\n', '\\n').replace('\t', '\\t').replace('|', '/')
                     if log_type != 'debug' or _debug_write:
                         # Does not write debugs to database if _debug_write is false
                         try:
