@@ -4,6 +4,7 @@ import time
 from datetime import datetime as __datetime
 import re
 import threading
+import atexit
 
 __log_write_to_file_thread_object = None  # Initialized at the file ending
 __log_stack = []
@@ -104,7 +105,7 @@ def __update_logfile_path_and_check_maximum_size() -> None:
     else:
         __logfile_path = __project_path + __project_subfolder + '\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
     try:
-        while os.path.getsize(__logfile_path) > 100000:# 1000000:  # If 10MB, create a new logfile
+        while os.path.getsize(__logfile_path) > 1000000:  # If 10MB, create a new logfile
             __logfile_number += 1
             __update_logfile_path_and_check_maximum_size()
     except FileNotFoundError:
@@ -216,18 +217,23 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
         print(f'ERROR in fld_toolbox.fldlogging: {e.message}, {e.args}')
 
 
+def __flush_remaining_logs():
+    """Write any remaining logs in the stack to file before program exit"""
+    if __log_stack:
+        buffer = ''
+        with __file_lock:
+            while __log_stack:
+                buffer += __log_stack.pop()
+            if buffer:
+                with open(__logfile_path, mode='a', encoding='utf-8') as logfile:
+                    logfile.write(buffer)
+
+
 def __log_write_to_file_thread():
     global __log_temp_counter
-    counter = 0
     run = True
     buffer = ''
     while run:
-        if counter > 10000:
-            if not threading.main_thread().is_alive():
-                run = False
-                __log_temp_counter = 1000
-            counter = 0
-        counter += 1
         try:
             if __log_stack:
                 # logfile should not exceed limit of 1 MB but checking at every logging may slow programm down, so it does only check every 50 times
@@ -242,6 +248,9 @@ def __log_write_to_file_thread():
         except Exception as e:
             print(f'ERROR in fld_toolbox.fldlogging: {e.message}, {e.args}')
 
+
+# Register flush function to run at program exit
+atexit.register(__flush_remaining_logs)
 
 if __log_write_to_file_thread_object is None:
     __log_write_to_file_thread_object = threading.Thread(target=__log_write_to_file_thread, name='fld_toolbox.fldlogging write_to_file_thread')
