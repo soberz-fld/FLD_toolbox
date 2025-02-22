@@ -3,6 +3,10 @@ import os
 import time
 from datetime import datetime as __datetime
 import re
+import threading
+
+__log_write_to_file_thread_object = None  # Initialized at the file ending
+__log_stack = []
 
 # _debug_print lets you print out the statements, so you do not need a separate print statement while debugging.
 _debug_print = False
@@ -19,6 +23,7 @@ __project_path = ''  # path of project if python file is part of a project that 
 __project_subfolder = ''  # Name of subfolder in project where logfiles are stored
 __log_path_of_module_length = 120
 __initialized = False
+__file_lock = threading.Lock()
 
 
 def set_debug_print(value: bool):
@@ -31,11 +36,17 @@ def set_debug_write(value: bool):
     _debug_write = value
 
 
-def __initialize_logfile_if_necessary_() -> None:
+def __initialize_logfile_if_necessary() -> None:
     global __logfile
-    __logfile = open(__logfile_path, mode='r+', encoding='utf-8')
-    content = __logfile.read()
-    if content == '':
+    with __file_lock:
+        try:
+            with open(__logfile_path, mode='r', encoding='utf-8') as logfile:
+                content = logfile.read()
+                if content != '':
+                    return
+        except FileNotFoundError:
+            content = ''
+
         text_to_logfile = 'FLD-ToolBox logging\nThis is Logfile number ' + str(__logfile_number).zfill(4) + '\n\nThis file can be analysed by RegEx:\n\\n([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+) \\| ([^\\|\\n]+)\n\n'
         # Delimiter line
         text_to_logfile += ''.ljust(26, '-')[0:26]
@@ -75,8 +86,8 @@ def __initialize_logfile_if_necessary_() -> None:
         text_to_logfile += '+'.center(len(__log_values_delimiter), '-')
         text_to_logfile += ''.ljust(100, '-')[0:100]
         # Write everything to file
-        __logfile.write(text_to_logfile)
-    __logfile.close()
+        with open(__logfile_path, mode='w', encoding='utf-8') as logfile:
+            logfile.write(text_to_logfile)
 
 
 def __update_logfile_path_and_check_maximum_size() -> None:
@@ -93,7 +104,7 @@ def __update_logfile_path_and_check_maximum_size() -> None:
     else:
         __logfile_path = __project_path + __project_subfolder + '\\' + __logfile_name + '_' + str(__logfile_number).zfill(4) + '.log'
     try:
-        while os.path.getsize(__logfile_path) > 1000000:  # If 10MB, create a new logfile
+        while os.path.getsize(__logfile_path) > 100000:# 1000000:  # If 10MB, create a new logfile
             __logfile_number += 1
             __update_logfile_path_and_check_maximum_size()
     except FileNotFoundError:
@@ -101,7 +112,7 @@ def __update_logfile_path_and_check_maximum_size() -> None:
         if not os.path.isdir(os.path.dirname(__logfile_path)):
             os.mkdir(os.path.dirname(__logfile_path))
         open(__logfile_path, "a").close()
-        __initialize_logfile_if_necessary_()
+        __initialize_logfile_if_necessary()
 
 
 def __init__(debug_print: bool = True, debug_write: bool = True, project_name: str = '', project_subfolder: str = '') -> None:
@@ -143,12 +154,9 @@ def __init__(debug_print: bool = True, debug_write: bool = True, project_name: s
         __project_subfolder = '\\' + project_subfolder
 
     __update_logfile_path_and_check_maximum_size()
-    __initialize_logfile_if_necessary_()  # If only empty logfile exists, it needs the head
+    __initialize_logfile_if_necessary()  # If only empty logfile exists, it needs the head
     global __initialized
     __initialized = True
-
-
-__log_stack = []
 
 
 def log(text: str = '', debug: str = '', action: str = '', alert='', error: str = '', critical: str = '') -> None:
@@ -180,12 +188,6 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
         'critical': critical
     }
 
-    # logfile should not exceed limit of 1 MB but checking at every logging may slow programm down so it does only check every 50 times
-    global __log_temp_counter
-    __log_temp_counter += 1
-    if not __log_temp_counter < 50:
-        __update_logfile_path_and_check_maximum_size()
-
     try:
         for log_type in __log_types:
             if __log_types[log_type] != '':
@@ -215,10 +217,32 @@ def log(text: str = '', debug: str = '', action: str = '', alert='', error: str 
 
 
 def __log_write_to_file_thread():
-    while True:
+    global __log_temp_counter
+    counter = 0
+    run = True
+    buffer = ''
+    while run:
+        if counter > 10000:
+            if not threading.main_thread().is_alive():
+                run = False
+                __log_temp_counter = 1000
+            counter = 0
+        counter += 1
         try:
             if __log_stack:
-                with open(__logfile_path, mode='a', encoding='utf-8') as logfile:
-                    logfile.write(__log_stack.pop())
+                # logfile should not exceed limit of 1 MB but checking at every logging may slow programm down, so it does only check every 50 times
+                buffer += __log_stack.pop()
+                __log_temp_counter += 1
+                if __log_temp_counter > 20:  # Only write every xth entry
+                    with __file_lock:
+                        with open(__logfile_path, mode='a', encoding='utf-8') as logfile:
+                            logfile.write(buffer)
+                    buffer = ''
+                    __update_logfile_path_and_check_maximum_size()
         except Exception as e:
             print(f'ERROR in fld_toolbox.fldlogging: {e.message}, {e.args}')
+
+
+if __log_write_to_file_thread_object is None:
+    __log_write_to_file_thread_object = threading.Thread(target=__log_write_to_file_thread, name='fld_toolbox.fldlogging write_to_file_thread')
+    __log_write_to_file_thread_object.start()
